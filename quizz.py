@@ -5,6 +5,7 @@ import random
 import collections
 import copy
 
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
