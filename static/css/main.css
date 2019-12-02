@@ -7,6 +7,8 @@ body {
   padding: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: black;
+  min-height: 2500px;
+  background: linear-gradient(#e66465, #9198e5) no-repeat;
 }
  
 /*
@@ -31,12 +33,12 @@ header h1.logo {
   text-transform: uppercase;
   text-align: center;
 }
- 
+ /*
 header h1.logo:hover {
-  color: #fff;
+  color: rgb(0,0,0);
   text-decoration: none;
 }
-
+*/
 h4 {
   font-size: 1.7em;
   font-weight: 100;
@@ -125,6 +127,13 @@ li {
   display: block;
 }
 
+.boite{
+	background : rgba(255,255,255,1) fixed no-repeat;
+	border-radius: 5px;
+	border: solid black 3px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
 
 .menu {
   float: right;
@@ -161,7 +170,7 @@ tr:nth-child(even)  { background-color:#fff; }
 tr:hover            { background-color: #ffff99;}
 
 header:hover{
-  background-color: blue;
+  background-color: rgba(255,255,255,1);
 }
 
 #username{
