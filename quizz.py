@@ -6,6 +6,7 @@ import collections
 import copy
 
 
+URL_DE_TEST = 'http://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sri%20Lanka.svg'
 file_csv = "./liste_logins.csv"
 
 app = Flask(__name__)
@@ -46,14 +47,15 @@ dict_capitale = { list_pays_str[i] : list_cap[i] for i in range(len(list_pays))}
 
 ##Génération des questions avec les réponses
 longueur_questionnaire = 10
-
+liste_choice = []
 questions = {}
 for i in range(longueur_questionnaire):
     k = random.randint(1, len(liste_pays_avec_articles)-1)
     pays = liste_pays_avec_articles[k]
+    liste_choice.append(list_pays_str[k])
     options = [random.choice(list_cap) for j in range(4)]
     options[random.randint(0,3)] = list_cap[k]
-    questions[str(i)] = {"question" : "Quelle est la capitale de {}".format(pays), "options" : options, "answer" : list_cap[k]}
+    questions[str(i)] = {"question" : "Quelle est la capitale de " + pays, "options" : options, "answer" : list_cap[k]}
 
 
 
@@ -86,7 +88,7 @@ def signup():
 def bienvenue():
     if not 'username' in session:
         return abort(403)        
-    return render_template('message.html', username=session['username'])
+    return render_template('message.html', username=session['username'], url_test = URL_DE_TEST)
     
 #### le questionnaire #####
     
@@ -141,25 +143,14 @@ def metrics():
     ### la colonne score
     cols.insert(df.shape[1], 'score')
     df.columns = cols
-    ### on va déterminer quel pokemon est le plus souvent reconnu par les utilisateurs pour ensuite l'afficher
     max_bonne_reponse = 0
-    for question in range(0, longueur_questionnaire) : 
-        if dict_global[liste_choice[question]] == 'Pokemon' : 
-            try:
-                nombre_reponse = df[liste_choice[question]].value_counts()['Pokemon'] 
-                if nombre_reponse > max_bonne_reponse : 
-                    max_bonne_reponse = nombre_reponse
-                    pokemon_mieux_trouve_image = liste_choice[question].lower() + ".jpg"
-                    pokemon_mieux_trouve = liste_choice[question]
-            except KeyError:
-                pass
 
 
     df.sort(['score'], ascending=[0],inplace = True)
 
     return render_template('metrics.html',tables=[df.head(3).to_html(index = False)],
-                                                  titles = cols , nom_pokemon = pokemon_mieux_trouve, 
-                                                  nb_answers = df.shape[0], image = pokemon_mieux_trouve_image )
+                                                  titles = cols , nom_cap = capitale_mieux_trouvee, 
+                                                  nb_answers = df.shape[0])
 
 
 if __name__ == '__main__':
