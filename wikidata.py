@@ -1,4 +1,4 @@
-
+from wikidata_villes_pas_capitales import dictionnaire_villes
 # pip install sparqlwrapper
 # https://rdflib.github.io/sparqlwrapper/
 
@@ -35,9 +35,20 @@ def get_results(endpoint_url, query):
 
 results = get_results(endpoint_url, query)
 
-for result in results["results"]["bindings"]:
-    print(result)
+results = results["results"]["bindings"]
 
-import urllib.request
 
-urllib.request.urlretrieve(results["results"]["bindings"][140]['flag']['value'], "local-filename.jpg")
+dictionnaire_des_pays = [{'Pays' : results[i]['countryLabel']['value'], 'Capitale' : results[i]['capitalLabel']['value'], 'Continent' :results[i]['continentLabel']['value'], 'President' : results[i]['presidentLabel']['value'], 'Population' : results[i]['population']['value'], 'Drapeau' : results[i]['flag']['value']} for i in range(len(results)) if ('capitalLabel' in results[i])]
+
+
+#Crée un dictionnaire de la forme ['Pays', 'Capitale', 'Continent', 'Population']
+
+for pays in dictionnaire_des_pays:
+    if pays['Pays'] in dictionnaire_villes:
+        pays['GdesVilles'] = dictionnaire_villes[pays['Pays']]
+
+#Ajoute les grandes villes autres que la capitale ex pour la France on a :
+# >>> dictionnaire_des_pays[171]
+#{'Pays': 'France', 'Capitale': 'Paris', 'Continent': 'Europe', 'President': 'Emmanuel Macron', 'Population': '66628000', 'Drapeau': 'http://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg', 'GdesVilles': ['Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes']}
+
+# /!\ y'a pas de gdes villes pour tous les pays pour l'instant, on verra si on peut améliorer ça plus tard /!\ du coup parfois la clé 'GdesVilles' n'existe pas
