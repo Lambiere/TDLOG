@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1> Bienvenue {{ username }}</h1>
+    <p>
+    	Quel type de questions souhaites-tu avoir ?
+    </p>
+	<form class="form" action="." method="post">
+    <input name="answer" type="submit" class="btn btn-primary" value="Drapeaux">&nbsp;&nbsp;
+    <input name="answer" type="submit" class="btn btn-primary" value="Capitales">&nbsp;&nbsp;
+    <input name="answer" type="submit" class="btn btn-primary" value="Présidents">&nbsp;&nbsp;
+    </form>
+    <a href="{{ url_for('questionnaire') }}"> Cliquer pour continuer </a>
+{% endblock %}
