@@ -30,8 +30,17 @@ for i in range(longueur_questionnaire):
     del liste_tous_indices[n]
 
 questions = {}
+URL_DU_QUIZZ =''
 nombre_options_par_question = 4
 
+
+
+def url_a_visiter(type_questions):
+	if type_questions == "Drapeau":
+		URL_DU_QUIZZ = 'quiz_drapeau.html'
+	else:
+		URL_DU_QUIZZ = 'quiz.html'
+	return URL_DU_QUIZZ
 
 def question_choice_jourgle(type_questions):
 	for i in range(longueur_questionnaire):
@@ -54,12 +63,13 @@ def question_choice_jourgle(type_questions):
 	        questions[str(i)] = {"question": "Quelle est la capitale de " + pays, "options": options, "answer": reponse}
 	    if type_questions == "President":
 	        questions[str(i)] = {"question": "Qui est le président de " + pays, "options": options, "answer": reponse}
-	    if type_questions == "Drapeaux":
-	    	questions[str(i)] = {"question": "Quel est le drapeaux " + pays, "options": options, "answer": reponse}
+	    if type_questions == "Drapeau":
+	    	questions[str(i)] = {"question": "Quel est le drapeau " + pays, "options": options, "answer": reponse}
 	return questions
 
 
 QUESTIONS = {}
+URL_DU_QUIZZ = ''
 
 #### La page d'accueil #####
 @app.route('/')
@@ -91,7 +101,12 @@ def bienvenue():
 def choix():
 	type_questions = request.form['answer']
 	QUESTIONS = question_choice_jourgle(type_questions)
-	return render_template('test.html', affiche = type_questions)
+	URL_DU_QUIZZ = url_a_visiter(type_questions)
+	print(URL_DU_QUIZZ)
+	if type_questions == "Drapeau":
+		return redirect('questionnaire_drap')
+	print(type_questions)
+	return redirect(url_for('questionnaire'))
 #### le questionnaire #####
     
 @app.route('/questionnaire/', methods=['GET', 'POST'])
@@ -99,6 +114,7 @@ def questionnaire():
     print(request.method)
     print(session.get("question", "a"))
 
+    print(URL_DU_QUIZZ)
     if request.method == "POST":
         if "question" in session:
             entered_answer = request.form.get('answer', '')
@@ -113,7 +129,7 @@ def questionnaire():
                 session["question"] = str(int(session["question"])+1)
         else:
             print("question missing")
-  
+
     if "question" not in session:
         session["question"] = "1"
         session["mark"] = 0
@@ -124,8 +140,43 @@ def questionnaire():
         df.loc[-1]  = liste
         df.to_csv(file_csv, index = False)       
         return render_template("score.html", score = session["mark"])
-    return render_template("quiz.html", question=questions[session["question"]]["question"], question_number=session["question"],
+    return render_template('quiz.html', question=questions[session["question"]]["question"], question_number=session["question"],
                             nb_questions = len(questions), options=questions[session["question"]]["options"], score = session["mark"], score_total = len(questions)*4)
+
+@app.route('/questionnaire_drap/', methods=['GET', 'POST'])
+def questionnaire_drap():
+    print(request.method)
+    print(session.get("question", "a"))
+
+    print(URL_DU_QUIZZ)
+    if request.method == "POST":
+        if "question" in session:
+            entered_answer = request.form.get('answer', '')
+            liste[int(session["question"])] = entered_answer
+            print(questions.get(session["question"],False))
+            if questions.get(session["question"],False):
+                if entered_answer != questions[session["question"]]["answer"]:
+                    mark = 0
+                else:
+                    mark = 4
+                session["mark"] += mark
+                session["question"] = str(int(session["question"])+1)
+        else:
+            print("question missing")
+
+    if "question" not in session:
+        session["question"] = "1"
+        session["mark"] = 0
+    elif session["question"] not in questions: #cas où il n'y a plus de question
+        df = pd.read_csv(file_csv)
+        df.reset_index(drop = True,inplace = True)          
+        liste[longueur_questionnaire+1]  =  session["mark"]
+        df.loc[-1]  = liste
+        df.to_csv(file_csv, index = False)       
+        return render_template("score.html", score = session["mark"])
+    return render_template('quiz_drapeau.html', question=questions[session["question"]]["question"], question_number=session["question"],
+                            nb_questions = len(questions), options=questions[session["question"]]["options"], score = session["mark"], score_total = len(questions)*4)
+
 
 
 
