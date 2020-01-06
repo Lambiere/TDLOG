@@ -11,9 +11,9 @@
     <div class="row">
         <hr>
         <div class=page>
-          <h3>3 meilleures réponses</h3>
+          <h3>~~ 10 meilleurs scores ~~</h3>
           {% for table in tables %}
-            {{ table |safe }}
+            {{ table[0] }}{{ "  "}}{{ table[1]}}<br />
           {% endfor %}
 
         </div>

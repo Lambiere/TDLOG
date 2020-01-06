@@ -197,25 +197,12 @@ def logout():
 
 @app.route('/metrics')
 def metrics():
-
-	#df = pd.read_csv(file_csv) 
-	#cols = copy.copy(liste_choice)
-	#cols.insert(0,'user')
-	### la colonne score
-	#cols.insert(df.shape[1], 'score')
-	#df.columns = cols
-	#max_bonne_reponse = 0
-
-
-	#df.sort(['score'], ascending=[0],inplace = True)
 	conn = sqlite3.connect('base_score.db')
 	cursor = conn.cursor()
 
-	cursor.execute("""SELECT name, score FROM users""")
+	cursor.execute("""SELECT score, name FROM users ORDER BY score DESC LIMIT 10""")
 	rows = cursor.fetchall()
-
-	print(rows)
-
+	
 	return render_template('metrics.html',tables= rows, nom_cap = "Paris", 
 							nb_answers = len(rows), nom_pays= "France")
 
