@@ -171,11 +171,15 @@ def questionnaire_drap():
 		session["question"] = "1"
 		session["mark"] = 0
 	elif session["question"] not in questions: #cas où il n'y a plus de question
-		df = pd.read_csv(file_csv)
-		df.reset_index(drop = True,inplace = True)          
-		liste[longueur_questionnaire+1]  =  session["mark"]
-		df.loc[-1]  = liste
-		df.to_csv(file_csv, index = False)       
+		#df = pd.read_csv(file_csv)
+		#df.reset_index(drop = True,inplace = True)          
+		#liste[longueur_questionnaire+1]  =  session["mark"]
+		#df.loc[-1]  = liste
+		#df.to_csv(file_csv, index = False)
+		conn = sqlite3.connect('base_score.db')
+		cur = conn.cursor()
+		cur.execute("INSERT INTO users(name, score) VALUES(?, ?)", (session["username"], session["mark"]))
+		conn.commit()      
 		return render_template("score.html", score = session["mark"])
 	return render_template('quiz_drapeau.html', question=questions[session["question"]]["question"], question_number=session["question"],
 							nb_questions = len(questions), options=questions[session["question"]]["options"], score = session["mark"], score_total = len(questions)*4)
@@ -193,20 +197,27 @@ def logout():
 
 @app.route('/metrics')
 def metrics():
-	df = pd.read_csv(file_csv) 
-	cols = copy.copy(liste_choice)
-	cols.insert(0,'user')
+
+	#df = pd.read_csv(file_csv) 
+	#cols = copy.copy(liste_choice)
+	#cols.insert(0,'user')
 	### la colonne score
-	cols.insert(df.shape[1], 'score')
-	df.columns = cols
-	max_bonne_reponse = 0
+	#cols.insert(df.shape[1], 'score')
+	#df.columns = cols
+	#max_bonne_reponse = 0
 
 
-	df.sort(['score'], ascending=[0],inplace = True)
+	#df.sort(['score'], ascending=[0],inplace = True)
+	conn = sqlite3.connect('base_score.db')
+	cursor = conn.cursor()
 
-	return render_template('metrics.html',tables=[df.head(3).to_html(index = False)],
-												  titles = cols , nom_cap = capitale_mieux_trouvee, 
-												  nb_answers = df.shape[0])
+	cursor.execute("""SELECT name, score FROM users""")
+	rows = cursor.fetchall()
+
+	print(rows)
+
+	return render_template('metrics.html',tables= rows, nom_cap = "Paris", 
+							nb_answers = len(rows), nom_pays= "France")
 
 
 if __name__ == '__main__':
