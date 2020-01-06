@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1> Bienvenue {{ username }}</h1>
+    <p>
+        Tu vas pouvoir commencer le questionnaire
+    </p>
+    <form method="post" action="{{ url_for('choix')}}">
+    	<input name="answer" type="submit" class="btn btn-primary" value="Drapeau">&nbsp;&nbsp; 
+    	<input name="answer" type="submit" class="btn btn-primary" value="President">&nbsp;&nbsp; 
+    	<input name="answer" type="submit" class="btn btn-primary" value="Capitale">&nbsp;&nbsp; 
+    </form>
+    <img src={{ url_test }}>
+    <a href="{{ url_for('questionnaire') }}"> Cliquer pour continuer </a>
+{% endblock %}
