@@ -16,3 +16,6 @@ A faire :
 - avoir d'autres types de questions : président, population, drapeaux
 - créer une base de données pour sotcker les infos des utilisateurs
 - ptite bière
+
+les mejs 
+
